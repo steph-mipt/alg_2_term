@@ -3,26 +3,26 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <optional>
 
-template<typename T, int SIZE>
+template<typename T>
 class HashTable {
 public:
     int size = 0;
     std::vector<std::list<std::pair<T, T>>> table;
 
-    HashTable( void ) {
+    HashTable( int size = 100000 ) {
         this->size = SIZE;
         this->table.resize(this->size);
     }
 
     ~HashTable( void ) = default;
 
-    bool put( T &x, T &y ) {
+    bool put( const T &x, const T &y ) {
         long long h = hash(x);
         bool f = false;
 
-        for (auto &i : table[h])
-        {
+        for (auto &i : table[h]) {
             if (i.first == x) {
                 i.second = y;
                 return true;
@@ -32,11 +32,10 @@ public:
         return false;
     }
 
-    bool pop( T &x ) {
+    bool pop( const T &x ) {
         long long h = hash(x);
 
-        for (auto &i : table[h])
-        {
+        for (auto &i : table[h]) {
             if (i.first == x) {
                 table[h].remove(i);
                 return true;
@@ -45,28 +44,26 @@ public:
         return false;
     }
 
-    T get( T &x ) {
+    std::optional<T> get( const T &x ) {
         long long h = hash(x);
         bool f = false;
 
-        for (auto &i : table[h])
-        {
+        for (auto &i : table[h]) {
             if (i.first == x) {
                 return i.second;
             }
         }
-        return "";
+        return {};
     }
 private:
     long long hash( T &x ) {
-        long long ans = 0, X = 1, p = 3284243;
+        long long ans = 0, mul = 1, prime = 3284243;
 
-        for (char i : x)
-        {
-            ans += (X * i);
+        for (char i : x) {
+            ans += (mul * i);
             ans %= this->size;
-            X *= p;
-            X %= this->size;
+            mul *= prime;
+            mul %= this->size;
         }
 
         return ans;
@@ -76,34 +73,35 @@ private:
 
 int main( void ) {
     std::string in, arg1, arg2;
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
-    freopen("map.in", "r", stdin);
-    freopen("map.out", "w", stdout);
+    std::ofstream outfile;
+    std::ifstream infile;
+    HashTable<std::string> A;
 
-    HashTable<std::string, 100000> A;
+    outfile.open("map.out");
+    infile.open("map.in");
 
-    while (std::cin >> in) {
+    while (infile >> in) {
         switch (in[0]) {
             case 'p':
-                std::cin >> arg1 >> arg2;
+                infile >> arg1 >> arg2;
                 A.put(arg1, arg2);
                 break;
             case 'd':
-                std::cin >> arg1;
+                infile >> arg1;
                 A.pop(arg1);
                 break;
             case 'g':
-                std::cin >> arg1;
+                infile >> arg1;
                 auto tmp = A.get(arg1);
                 if (tmp == "") {
-                    std::cout << "none\n";
+                    outfile << "none\n";
                 } else {
-                    std::cout << tmp << "\n";
+                    outfile << tmp << "\n";
                 }
                 break;
         }
     }
+    outfile.close();
+    infile.close();
     return 0;
 }
