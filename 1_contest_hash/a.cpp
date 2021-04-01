@@ -2,26 +2,26 @@
 #include <vector>
 #include <list>
 #include <string>
-#define T_SIZE 100000
 
 
 class hashTable{
 private:
   std::vector<std::list<std::pair<std::string, int>>> table;
+  int size_;
 
 public:
-  hashTable( void ) {
-    table.resize(T_SIZE);
+  hashTable( int size = 1000000 ) : size_(size) {
+    table.resize(size);
   }
 
   long long add( const int val, const std::string &str ) {
     long long h = hash(str);
 
-    for (auto &i : table[h]) {
-      if (i.first == in) {
-        i.second += val;
+    for (auto &element : table[h]) {
+      if (element.first == in) {
+        element.second += val;
     
-        return i.second;
+        return element.second;
       }
     }
     table[h].push_front({str, val});
@@ -35,11 +35,11 @@ public:
            x = 1,
            p = 31;
 
-      for (char &i : str) {
-          ans += (x * i);
-          ans %= T_SIZE;
+      for (char &ch : str) {
+          ans += (x * ch);
+          ans %= size;
           x *= p;
-          x %= T_SIZE;
+          x %= size;
       }
 
       return ans;
