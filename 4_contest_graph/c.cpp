@@ -8,8 +8,34 @@ private:
     std::vector<std::vector<int>> adjancency_list_;
     int num_vertices_;
     /// 0 - white, 1 - gray, (-1) - black
+    enum class Colors {
+      kWhite = 0,
+      kGray = 1,
+      kBlack = -1,
+    };
+
     std::vector<int> colors_;
     std::stack<int> way;
+
+    bool DFS(int v) {
+        colors_[v] = Colors.kGray;
+        for (auto vertex : adjancency_list_[v]) {
+            if (colors_[vertex] == Colors.kGray) {
+                way.emplace(v);
+                way.emplace(vertex);
+                return true;
+            } else if (colors_[vertex] == Colors.kBlack) {
+                continue;
+            } else {
+                way.emplace(v);
+                if (DFS(vertex))
+                    return true;
+                way.pop();
+            }
+        }
+        colors_[v] = Colors.kBlack;
+        return false;
+    }
 
 public:
     Graph(int num_vertices) : num_vertices_(num_vertices), adjancency_list_(num_vertices) {
@@ -22,7 +48,7 @@ public:
 
     void solve(void) {
         for (int i = 0; i < num_vertices_; ++i) {
-            if (colors_[i] == 0) {
+            if (colors_[i] == Colors.kWite) {
                 if (DFS(i)) {
                     std::cout << "YES\n";
 
@@ -44,26 +70,6 @@ public:
             }
         }
         std::cout << "NO";
-    }
-
-    bool DFS(int v) {
-        colors_[v] = 1;
-        for (auto vertex : adjancency_list_[v]) {
-            if (colors_[vertex] == 1) {
-                way.emplace(v);
-                way.emplace(vertex);
-                return true;
-            } else if (colors_[vertex] == -1) {
-                continue;
-            } else {
-                way.emplace(v);
-                if (DFS(vertex))
-                    return true;
-                way.pop();
-            }
-        }
-        colors_[v] = -1;
-        return false;
     }
 };
 
