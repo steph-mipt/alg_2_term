@@ -6,11 +6,10 @@ class Deque {
 public:
     template<bool IsConst>
     class common_iterator {
-    public:
+    private:
         std::vector<T *> &data_;
         size_t index_;
-
-
+    public:
         common_iterator(const size_t index, std::vector<T *> &data) : data_(data), index_(index) {
         }
 
