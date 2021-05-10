@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <set>
 
-const long long INF = 10000000000000000;
-
 struct Edge {
 public:
     long long end, weight;
@@ -20,23 +18,21 @@ private:
     long long start;
     long long end;
 
-    /// 0 - white, 1 - gray, (-1) - black
     std::vector<long long> dist_;
     std::vector<std::vector<int>> adjancency_list_;
-    std::vector<std::vector<Edge>> data_;
-
+    std::vector<std::vector<Edge>> edges_;
 public:
     Graph(long long num_vertices, long long main, long long end) : num_vertices_(num_vertices),
                                                                    adjancency_list_(num_vertices), end(end - 1) {
-        data_.resize(num_vertices);
-        dist_ = std::vector<long long>(num_vertices, INF);
+        edges_.resize(num_vertices);
+        dist_ = std::vector<long long>(num_vertices, std::numeric_limits<long long>::max());
         dist_[main - 1] = 0;
         start = main - 1;
     }
 
     void AddEdge(long long first, long long second, long long weight) {
-        data_[first - 1].push_back(Edge(second - 1, weight));
-        data_[second - 1].push_back(Edge(first - 1, weight));
+        edges_[first - 1].push_back(Edge(second - 1, weight));
+        edges_[second - 1].push_back(Edge(first - 1, weight));
         adjancency_list_[first - 1].push_back(second - 1);
         adjancency_list_[second - 1].push_back(first - 1);
     }
@@ -51,14 +47,14 @@ public:
             set.erase(set.begin());
             for (int i = 0; i < adjancency_list_[cur].size(); ++i) {
                 auto &a = adjancency_list_[cur];
-                if (dist_[a[i]] > dist_[cur] + data_[cur][i].weight) {
-                    dist_[a[i]] = dist_[cur] + data_[cur][i].weight;
+                if (dist_[a[i]] > dist_[cur] + edges_[cur][i].weight) {
+                    dist_[a[i]] = dist_[cur] + edges_[cur][i].weight;
                     set.insert({dist_[a[i]], a[i]});
                 }
             }
         }
 
-        if (dist_[end] == INF) {
+        if (dist_[end] == std::numeric_limits<long long>::max()) {
             std::cout << -1;
         } else {
             std::cout << dist_[end] << " ";
